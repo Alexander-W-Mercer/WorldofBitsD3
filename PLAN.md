@@ -26,10 +26,11 @@ Key gameplay challenge: Can players collect and craft tokens from nearby locatio
 - [x] Replace the rectangles to be around the player
 - [x] use loops to draw a whole grid of cells on the map
 - [x] make a radius circle that shows the area that's clickable within for the player
-- [ ] make a list that holds data points associated with each grid
-- [ ] visually show those points.
-- [ ] make them clickable
-- [ ] Make the tokens randomly generate with the luck-style points
+- [ ] make only tiles clickable that are within the green circle
+- [ ] visually display how many points each tile has within them.
+- [ ] make the tiles clickable
+- [ ] make tiles not able to drop below 0 of itself
+- [ ] adjust the generating numbers with the luck-style points to have something that fits better
 
 ## D3.b
 
