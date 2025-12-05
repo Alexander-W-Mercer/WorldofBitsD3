@@ -53,3 +53,7 @@ Key gameplay challenge: Can players collect and craft tokens from nearby locatio
 - [x] make victory screen upon crafting a tile that is equal to 64
 
 ### D3.c
+
+- [ ] Design a class that works as an interface for a flyweight pattern, allowing for efficient recreation of all the tiles with the same assets / designs and whatnot
+- [ ] Design a restore function for this class that holds a whole array (map?) that would be the momento 'caretaker' for all the 'momentos' (the tiles)
+- [ ] make it so that the tile / momento is only saved to this caretaker array after one of the three buttons on it has been clicked (destroy, take, place)
