@@ -198,8 +198,10 @@ function spawnCache(i: number, j: number) {
 
   // Calculate the point value for this cache (mutable)
   let pointValue = Math.floor(
-    luck([i, j, "initialValue"].toString()) * 100,
+    luck([i, j, "initialValue"].toString()) * 4,
   );
+
+  pointValue = Math.pow(2, pointValue); // Square the value for more variance
 
   // Add a rectangle to the map to represent the cache
   const rect = leaflet.rectangle(bounds);
