@@ -25,11 +25,45 @@ const statusPanelDiv = document.createElement("div");
 statusPanelDiv.id = "statusPanel";
 document.body.append(statusPanelDiv);
 
-// Our classroom location
-const CLASSROOM_LATLNG = leaflet.latLng(
-  36.997936938057016,
-  -122.05703507501151,
-);
+// Our current location (start with a fallback; update from device geolocation when available)
+let CURRENT_LATLNG = leaflet.latLng(36.997936938057016, -122.05703507501151);
+
+if (typeof navigator !== "undefined" && "geolocation" in navigator) {
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const { latitude, longitude } = position.coords;
+      CURRENT_LATLNG = leaflet.latLng(latitude, longitude);
+
+      // Update the map view and player marker if they exist. These are declared
+      // later in the file, but this callback runs asynchronously after
+      // synchronous initialization, so it's safe to call them here.
+      try {
+        // `map` and `playerMarker` are created later; when this callback runs
+        // they will be defined and we can update them to reflect device location.
+        // Use a try/catch to avoid runtime errors if something else changed.
+        if (map && typeof map.setView === "function") {
+          map.setView(CURRENT_LATLNG, GAMEPLAY_ZOOM_LEVEL);
+        }
+      } catch (_e) {
+        // map may not be ready yet; that's fine — it'll still initialize at the fallback
+      }
+
+      try {
+        if (playerMarker && typeof playerMarker.setLatLng === "function") {
+          playerMarker.setLatLng(CURRENT_LATLNG);
+        }
+      } catch (_e) {
+        // playerMarker may not exist yet; it's fine.
+      }
+    },
+    (err) => {
+      console.warn("Geolocation failed, using fallback location:", err);
+    },
+    { enableHighAccuracy: true, maximumAge: 60000, timeout: 10000 },
+  );
+} else {
+  console.warn("Geolocation not supported — using fallback location");
+}
 
 // Tunable gameplay parameters
 const GAMEPLAY_ZOOM_LEVEL = 19;
@@ -39,7 +73,7 @@ const CACHE_SPAWN_PROBABILITY = 0.1;
 
 // Create the map (element with id "map" is defined in index.html)
 const map = leaflet.map(mapDiv, {
-  center: CLASSROOM_LATLNG,
+  center: CURRENT_LATLNG,
   zoom: GAMEPLAY_ZOOM_LEVEL,
   minZoom: GAMEPLAY_ZOOM_LEVEL,
   maxZoom: GAMEPLAY_ZOOM_LEVEL,
@@ -57,8 +91,8 @@ leaflet
   .addTo(map);
 
 // Add a marker to represent the player
-const playerMarker = leaflet.marker(CLASSROOM_LATLNG);
-playerMarker.bindTooltip("That's you!");
+const playerMarker = leaflet.marker(CURRENT_LATLNG);
+playerMarker.bindTooltip("Your current location!");
 playerMarker.addTo(map);
 
 // Display the player's points
@@ -68,7 +102,7 @@ statusPanelDiv.innerHTML = "No points yet...";
 // Add caches to the map by cell numbers
 function spawnCache(i: number, j: number) {
   // Convert cell numbers into lat/lng bounds
-  const origin = CLASSROOM_LATLNG;
+  const origin = CURRENT_LATLNG;
   const bounds = leaflet.latLngBounds([
     [origin.lat + i * TILE_DEGREES, origin.lng + j * TILE_DEGREES],
     [origin.lat + (i + 1) * TILE_DEGREES, origin.lng + (j + 1) * TILE_DEGREES],
