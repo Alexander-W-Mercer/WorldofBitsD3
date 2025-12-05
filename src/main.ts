@@ -201,7 +201,7 @@ class TileMemento {
 }
 
 // Individual tile instance
-class _Tile {
+class Tile {
   constructor(
     public readonly type: TileType, // Reference to shared flyweight
     public readonly i: number, // Grid coordinate
@@ -221,7 +221,7 @@ class _Tile {
 }
 
 // Caretaker - manages saved tile states
-class _TileCaretaker {
+class TileCaretaker {
   private savedStates: Map<string, TileMemento> = new Map();
 
   // Save a tile's state with a key (e.g., "i,j")
@@ -373,7 +373,7 @@ const sharedTileType = new TileType(
 );
 
 // Create caretaker to manage saved tile states
-//const tileCaretaker = new TileCaretaker();
+const tileCaretaker = new TileCaretaker();
 
 //////////////////////////////////////////////////////////////////
 // MAP INITIALIZATION AND GAME LOGIC
@@ -556,6 +556,13 @@ function spawnCache(i: number, j: number) {
             statusPanelDiv.innerHTML = `${playerPoints} points accumulated`;
             updateLabel(); // Update the label on the map
             rect.closePopup(); // Close the popup
+
+            // Create a Tile instance for this cache
+            const tile = new Tile(sharedTileType, i, j, pointValue);
+            // Save the tile's state to the caretaker
+            const memento = tile.save();
+            tileCaretaker.saveState(`${i},${j}`, memento);
+
             if (playerPoints >= 64) {
               showVictory();
             }
@@ -580,6 +587,13 @@ function spawnCache(i: number, j: number) {
             statusPanelDiv.innerHTML = `No points yet...`;
             updateLabel(); // Update the label on the map
             rect.closePopup(); // Close the popup
+
+            // Create a Tile instance for this cache
+            const tile = new Tile(sharedTileType, i, j, pointValue);
+            // Save the tile's state to the caretaker
+            const memento = tile.save();
+            tileCaretaker.saveState(`${i},${j}`, memento);
+
             if (pointValue >= 64) {
               showVictory();
             }
@@ -601,6 +615,12 @@ function spawnCache(i: number, j: number) {
             pointValue.toString();
           updateLabel(); // Update the label on the map
           rect.closePopup(); // Close the popup
+
+          // Create a Tile instance for this cache
+          const tile = new Tile(sharedTileType, i, j, pointValue);
+          // Save the tile's state to the caretaker
+          const memento = tile.save();
+          tileCaretaker.saveState(`${i},${j}`, memento);
         } else {
           alert("This cache is already empty!");
         }
