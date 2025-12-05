@@ -44,7 +44,7 @@ Key gameplay challenge: Can players collect and craft tokens from nearby locatio
 - [x] make those arrows change the offset
 - [x] switch the starting coords over to null island, and see if theres more to that than I think
 - [x] make the rectangles worldwide, just only show up near player
-- [ ] fix whatever broke with not displaying the rectangles on the full screen
+- [x] fix whatever broke with not displaying the rectangles on the full screen
 - [ ] change color of non-reachable tiles just for fun
 - [ ] make victory screen upon crafting a tile that is equal to 64
 

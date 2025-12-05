@@ -25,6 +25,12 @@ const statusPanelDiv = document.createElement("div");
 statusPanelDiv.id = "statusPanel";
 document.body.append(statusPanelDiv);
 
+// Create geolocation status display
+const geoStatusDiv = document.createElement("div");
+geoStatusDiv.id = "geoStatus";
+geoStatusDiv.innerHTML = "🔍 Requesting location...";
+document.body.append(geoStatusDiv);
+
 // Create directional controls at the bottom
 const navigationDiv = document.createElement("div");
 navigationDiv.id = "navigation";
@@ -162,12 +168,36 @@ if (typeof navigator !== "undefined" && "geolocation" in navigator) {
         // playerCircle may not exist yet; it's fine.
       }
 
+      // Update geolocation status
+      geoStatusDiv.innerHTML = `✅ Location: ${latitude.toFixed(6)}, ${
+        longitude.toFixed(6)
+      }`;
+      geoStatusDiv.style.color = "green";
+
       // Clear old tiles and spawn tiles at the updated location
       clearTiles();
       spawnTiles();
     },
     (err) => {
       console.warn("Geolocation failed, using fallback location:", err);
+
+      // Update status with error details
+      let errorMsg = "";
+      switch (err.code) {
+        case err.PERMISSION_DENIED:
+          errorMsg = "❌ Location denied - check browser permissions";
+          break;
+        case err.POSITION_UNAVAILABLE:
+          errorMsg = "❌ Location unavailable - GPS signal lost";
+          break;
+        case err.TIMEOUT:
+          errorMsg = "❌ Location timeout - taking too long";
+          break;
+        default:
+          errorMsg = "❌ Location error: " + err.message;
+      }
+      geoStatusDiv.innerHTML = errorMsg + " (using fallback)";
+      geoStatusDiv.style.color = "red";
 
       // Spawn tiles at the fallback location if not already spawned
       if (spawnedCaches.length === 0) {
@@ -183,6 +213,8 @@ if (typeof navigator !== "undefined" && "geolocation" in navigator) {
   );
 } else {
   console.warn("Geolocation not supported — using fallback location");
+  geoStatusDiv.textContent = "❌ Geolocation not supported by browser";
+  geoStatusDiv.style.color = "red";
   // Spawn tiles at the fallback location
   spawnTiles();
 }
