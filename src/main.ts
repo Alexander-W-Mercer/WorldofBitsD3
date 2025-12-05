@@ -413,7 +413,7 @@ function spawnCache(i: number, j: number) {
     const popupDiv = document.createElement("div");
     popupDiv.innerHTML = `
                 <div>There is a cache here at "${i},${j}". It has value <span id="value">${pointValue}</span>.</div>
-                <button id="take">Take</button> <button id="place">Place</button>`;
+                <button id="take">Take</button> <button id="place">Place</button> <button id="destroy">Destroy</button>`;
 
     // Take button: remove coins from cache and add to player inventory
     popupDiv
@@ -454,6 +454,21 @@ function spawnCache(i: number, j: number) {
           }
         } else {
           alert("You have no points to place!");
+        }
+      });
+
+    // Destroy button: set cache value to 0
+    popupDiv
+      .querySelector<HTMLButtonElement>("#destroy")!
+      .addEventListener("click", () => {
+        if (pointValue > 0) {
+          pointValue = 0;
+          popupDiv.querySelector<HTMLSpanElement>("#value")!.innerHTML =
+            pointValue.toString();
+          updateLabel(); // Update the label on the map
+          rect.closePopup(); // Close the popup
+        } else {
+          alert("This cache is already empty!");
         }
       });
 
