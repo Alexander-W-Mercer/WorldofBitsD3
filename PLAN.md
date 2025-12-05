@@ -30,6 +30,7 @@ Key gameplay challenge: Can players collect and craft tokens from nearby locatio
 - [x] visually display how many points each tile has within them.
 - [x] make tiles not able to drop below 0 of itself
 - [x] adjust the generating numbers with the luck-style points to have something that fits better
+- [ ] make picking up items while hands are full impossible
 - [ ] look for fix to strange inaccurate location detection
 - [ ] change holding inventory to make more sense
 - [ ] add ability to place tokens back into empty space by adding place button to popup.
