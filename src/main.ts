@@ -255,11 +255,11 @@ function spawnCache(i: number, j: number) {
     const popupDiv = document.createElement("div");
     popupDiv.innerHTML = `
                 <div>There is a cache here at "${i},${j}". It has value <span id="value">${pointValue}</span>.</div>
-                <button id="poke">poke</button>`;
+                <button id="take">Take</button>`;
 
     // Clicking the button decrements the cache's value and increments the player's points
     popupDiv
-      .querySelector<HTMLButtonElement>("#poke")!
+      .querySelector<HTMLButtonElement>("#take")!
       .addEventListener("click", () => {
         if (pointValue >= 1) {
           pointValue--;
