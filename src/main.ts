@@ -259,12 +259,16 @@ function spawnCache(i: number, j: number) {
     popupDiv
       .querySelector<HTMLButtonElement>("#poke")!
       .addEventListener("click", () => {
-        pointValue--;
-        popupDiv.querySelector<HTMLSpanElement>("#value")!.innerHTML =
-          pointValue.toString();
-        playerPoints++;
-        statusPanelDiv.innerHTML = `${playerPoints} points accumulated`;
-        updateLabel(); // Update the label on the map
+        if (pointValue >= 1) {
+          pointValue--;
+          popupDiv.querySelector<HTMLSpanElement>("#value")!.innerHTML =
+            pointValue.toString();
+          playerPoints++;
+          statusPanelDiv.innerHTML = `${playerPoints} points accumulated`;
+          updateLabel(); // Update the label on the map
+        } else {
+          alert("This cache is fully depleted!");
+        }
       });
 
     return popupDiv;
