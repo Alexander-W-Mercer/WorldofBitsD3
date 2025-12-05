@@ -289,12 +289,16 @@ function spawnCache(i: number, j: number) {
       .querySelector<HTMLButtonElement>("#place")!
       .addEventListener("click", () => {
         if (playerPoints > 0) {
-          pointValue += playerPoints;
-          playerPoints = 0;
-          popupDiv.querySelector<HTMLSpanElement>("#value")!.innerHTML =
-            pointValue.toString();
-          statusPanelDiv.innerHTML = `No points yet...`;
-          updateLabel(); // Update the label on the map
+          if (pointValue === playerPoints) {
+            pointValue += playerPoints;
+            playerPoints = 0;
+            popupDiv.querySelector<HTMLSpanElement>("#value")!.innerHTML =
+              pointValue.toString();
+            statusPanelDiv.innerHTML = `No points yet...`;
+            updateLabel(); // Update the label on the map
+          } else {
+            alert("You can only place points into a cache of equal value!");
+          }
         } else {
           alert("You have no points to place!");
         }
