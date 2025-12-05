@@ -166,7 +166,7 @@ function spawnTiles() {
 //////////////////////////////////////////////////////////////////
 
 // Flyweight - ONE copy for all tiles of this type
-class _TileType {
+class TileType {
   constructor(
     public readonly inRangeColor: string, // "#3388ff"
     public readonly outOfRangeColor: string, // "#ff3333ff"
@@ -203,7 +203,7 @@ class TileMemento {
 // Individual tile instance
 class _Tile {
   constructor(
-    public readonly type: _TileType, // Reference to shared flyweight
+    public readonly type: TileType, // Reference to shared flyweight
     public readonly i: number, // Grid coordinate
     public readonly j: number, // Grid coordinate
     public value: number, // Current point value (mutable)
@@ -364,6 +364,21 @@ const TILE_DEGREES = 1e-4;
 const NEIGHBORHOOD_SIZE = 8;
 const CACHE_SPAWN_PROBABILITY = 0.1;
 
+// Create shared flyweight instance (used by all tiles)
+const sharedTileType = new TileType(
+  "#3388ff",
+  "#ff3333ff",
+  TILE_DEGREES,
+  3 * TILE_DEGREES * 111000,
+);
+
+// Create caretaker to manage saved tile states
+//const tileCaretaker = new TileCaretaker();
+
+//////////////////////////////////////////////////////////////////
+// MAP INITIALIZATION AND GAME LOGIC
+//////////////////////////////////////////////////////////////////
+
 // Create the map (element with id "map" is defined in index.html)
 const map = leaflet.map(mapDiv, {
   center: PLAYER_LATLNG,
@@ -466,19 +481,20 @@ function spawnCache(i: number, j: number) {
   pointValue = Math.pow(2, pointValue); // Square the value for more variance
 
   // Check if this tile is within interaction range
-  const INTERACTION_RADIUS = 3 * TILE_DEGREES * 111000; // Same as green circle radius
+  const INTERACTION_RADIUS = sharedTileType.interactionRadius; // Same as green circle radius
   const distanceToPlayer = PLAYER_LATLNG.distanceTo(tileCenter);
   const isWithinRange = distanceToPlayer <= INTERACTION_RADIUS;
 
   // Add a rectangle to the map to represent the cache
-  const rect = leaflet.rectangle(bounds, {
-    color: isWithinRange ? "#3388ff" : "#ff3333ff", // Blue if in range, red if out of range
-  });
+  const rect = leaflet.rectangle(
+    bounds,
+    sharedTileType.getRectangleOptions(isWithinRange),
+  );
   rect.addTo(map);
   spawnedCaches.push(rect);
 
   // Add a text label showing the point value
-  const labelColor = isWithinRange ? "#3388ff" : "#ff3333ff"; // Match tile color
+  const labelColor = sharedTileType.getLabelColor(isWithinRange); // Match tile color
   const label = leaflet.marker(tileCenter, {
     icon: leaflet.divIcon({
       className: "cache-label",
@@ -509,7 +525,7 @@ function spawnCache(i: number, j: number) {
   // Handle interactions with the cache
   rect.bindPopup(() => {
     // Check if cache is within interaction range at click time
-    const INTERACTION_RADIUS = 3 * TILE_DEGREES * 111000; // Same as green circle radius
+    const INTERACTION_RADIUS = sharedTileType.interactionRadius; // Same as green circle radius
     const distanceToPlayer = PLAYER_LATLNG.distanceTo(tileCenter);
     const isWithinRange = distanceToPlayer <= INTERACTION_RADIUS;
 
