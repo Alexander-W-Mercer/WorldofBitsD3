@@ -41,12 +41,45 @@ function clearTiles() {
 
 // Function to spawn tiles around the player
 function spawnTiles() {
-  // Look around the player's neighborhood for caches to spawn
-  for (let i = -NEIGHBORHOOD_SIZE; i < NEIGHBORHOOD_SIZE; i++) {
-    for (let j = -NEIGHBORHOOD_SIZE; j < NEIGHBORHOOD_SIZE; j++) {
-      // If location i,j is lucky enough, spawn a cache!
-      if (luck([i, j].toString()) < CACHE_SPAWN_PROBABILITY) {
-        spawnCache(i, j);
+  try {
+    // Get the map's visible bounds
+    const bounds = map.getBounds();
+    const northWest = bounds.getNorthWest();
+    const southEast = bounds.getSouthEast();
+
+    // Calculate which tile indices are visible on screen
+    // Note: i represents latitude rows (north/south), j represents longitude columns (east/west)
+    // NorthWest has the highest lat, SouthEast has the lowest lat
+    const minLat = Math.floor(
+      (southEast.lat - PLAYER_LATLNG.lat) / TILE_DEGREES,
+    );
+    const maxLat = Math.ceil(
+      (northWest.lat - PLAYER_LATLNG.lat) / TILE_DEGREES,
+    );
+    const minLng = Math.floor(
+      (northWest.lng - PLAYER_LATLNG.lng) / TILE_DEGREES,
+    );
+    const maxLng = Math.ceil(
+      (southEast.lng - PLAYER_LATLNG.lng) / TILE_DEGREES,
+    );
+
+    // Spawn tiles for all visible grid cells
+    for (let i = minLat; i < maxLat; i++) {
+      for (let j = minLng; j < maxLng; j++) {
+        // If location i,j is lucky enough, spawn a cache!
+        if (luck([i, j].toString()) < CACHE_SPAWN_PROBABILITY) {
+          spawnCache(i, j);
+        }
+      }
+    }
+  } catch (_e) {
+    // Map may not be ready yet; fall back to neighborhood spawn
+    for (let i = -NEIGHBORHOOD_SIZE; i < NEIGHBORHOOD_SIZE; i++) {
+      for (let j = -NEIGHBORHOOD_SIZE; j < NEIGHBORHOOD_SIZE; j++) {
+        // If location i,j is lucky enough, spawn a cache!
+        if (luck([i, j].toString()) < CACHE_SPAWN_PROBABILITY) {
+          spawnCache(i, j);
+        }
       }
     }
   }
