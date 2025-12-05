@@ -40,8 +40,8 @@ Key gameplay challenge: Can players collect and craft tokens from nearby locatio
 
 - [x] make starting guideline bullet points in plan.md for D3
 - [x] Make directional arrows appear on the screen
-- [ ] change player positioning so that it is tied to your location plus an offset
-- [ ] make those arrows change the offset
+- [x] change player positioning so that it is tied to your location plus an offset
+- [x] make those arrows change the offset
 - [ ] make new rectangles as the screen moves
 - [ ] switch the starting coords over to null island, and see if theres more to that than I think
 - [ ] change color of non-reachable tiles just for fun

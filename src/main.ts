@@ -218,10 +218,10 @@ const playerCircle = leaflet.circle(PLAYER_LATLNG, {
 playerCircle.addTo(map);
 
 // Add directional controls to modify the offset
-const MOVE_DISTANCE = TILE_DEGREES * 10; // Move by 10 tiles
+const MOVE_DISTANCE = TILE_DEGREES * 5; // Move by 10 tiles
 
 document.getElementById("north")!.addEventListener("click", () => {
-  playerOffset.lat += MOVE_DISTANCE;
+  playerOffset.lat += MOVE_DISTANCE / 2;
   PLAYER_LATLNG = getPlayerLatLng();
   map.setView(PLAYER_LATLNG, GAMEPLAY_ZOOM_LEVEL);
   playerMarker.setLatLng(PLAYER_LATLNG);
@@ -231,7 +231,7 @@ document.getElementById("north")!.addEventListener("click", () => {
 });
 
 document.getElementById("south")!.addEventListener("click", () => {
-  playerOffset.lat -= MOVE_DISTANCE;
+  playerOffset.lat -= MOVE_DISTANCE / 2;
   PLAYER_LATLNG = getPlayerLatLng();
   map.setView(PLAYER_LATLNG, GAMEPLAY_ZOOM_LEVEL);
   playerMarker.setLatLng(PLAYER_LATLNG);
