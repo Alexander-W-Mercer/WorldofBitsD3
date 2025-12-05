@@ -26,7 +26,7 @@ Key gameplay challenge: Can players collect and craft tokens from nearby locatio
 - [x] Replace the rectangles to be around the player
 - [x] use loops to draw a whole grid of cells on the map
 - [x] make a radius circle that shows the area that's clickable within for the player
-- [ ] make only tiles clickable that are within the green circle
+- [x] make only tiles clickable that are within the green circle
 - [ ] visually display how many points each tile has within them.
 - [ ] make the tiles clickable
 - [ ] make tiles not able to drop below 0 of itself
