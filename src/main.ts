@@ -58,10 +58,12 @@ victoryScreen.innerHTML = `
 document.body.append(victoryScreen);
 
 // Function to show victory screen (call this to trigger victory)
-// deno-lint-ignore no-unused-vars
-function showVictory() {
+export function showVictory() {
   victoryScreen.style.display = "flex";
 }
+
+// Make showVictory accessible from console for testing
+(globalThis as { showVictory?: () => void }).showVictory = showVictory;
 
 // Play again button reloads the page
 document.addEventListener("DOMContentLoaded", () => {

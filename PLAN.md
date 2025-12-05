@@ -50,6 +50,6 @@ Key gameplay challenge: Can players collect and craft tokens from nearby locatio
 - [x] make the text box go away when you either take or place a number because it is starting to annoy me
 - [x] make a 'destroy' button to empty a tile, that way there can be a space to put something down
 - [x] make it possible to pick up a number of the same type while holding one otherwise I'm not sure how I'm going to get to test getting to 64 due to how the numbers like to delete themselves.
-- [ ] make victory screen upon crafting a tile that is equal to 64
+- [x] make victory screen upon crafting a tile that is equal to 64
 
 ### D3.c
