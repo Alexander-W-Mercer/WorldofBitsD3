@@ -25,6 +25,19 @@ const statusPanelDiv = document.createElement("div");
 statusPanelDiv.id = "statusPanel";
 document.body.append(statusPanelDiv);
 
+// Create directional controls at the bottom
+const navigationDiv = document.createElement("div");
+navigationDiv.id = "navigation";
+navigationDiv.innerHTML = `
+  <button id="north">⬆️</button>
+  <div>
+    <button id="west">⬅️</button>
+    <button id="south">⬇️</button>
+    <button id="east">➡️</button>
+  </div>
+`;
+document.body.append(navigationDiv);
+
 // Our current location (start with a fallback; update from device geolocation when available)
 let PLAYER_LATLNG = leaflet.latLng(36.997936938057016, -122.05703507501151);
 
