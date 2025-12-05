@@ -29,7 +29,7 @@ Key gameplay challenge: Can players collect and craft tokens from nearby locatio
 - [x] make only tiles clickable that are within the green circle
 - [x] visually display how many points each tile has within them.
 - [x] make tiles not able to drop below 0 of itself
-- [ ] adjust the generating numbers with the luck-style points to have something that fits better
+- [x] adjust the generating numbers with the luck-style points to have something that fits better
 
 ## D3.b
 

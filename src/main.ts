@@ -262,10 +262,10 @@ function spawnCache(i: number, j: number) {
       .querySelector<HTMLButtonElement>("#take")!
       .addEventListener("click", () => {
         if (pointValue >= 1) {
-          pointValue--;
+          playerPoints = pointValue;
+          pointValue = 0;
           popupDiv.querySelector<HTMLSpanElement>("#value")!.innerHTML =
             pointValue.toString();
-          playerPoints++;
           statusPanelDiv.innerHTML = `${playerPoints} points accumulated`;
           updateLabel(); // Update the label on the map
         } else {
