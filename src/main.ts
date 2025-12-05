@@ -28,8 +28,8 @@ document.body.append(statusPanelDiv);
 // Our current location (start with a fallback; update from device geolocation when available)
 let PLAYER_LATLNG = leaflet.latLng(36.997936938057016, -122.05703507501151);
 
-// Track spawned cache rectangles so we can clear them when respawning
-const spawnedCaches: leaflet.Rectangle[] = [];
+// Track spawned cache rectangles and labels so we can clear them when respawning
+const spawnedCaches: (leaflet.Rectangle | leaflet.Marker)[] = [];
 
 // Function to clear all spawned tiles from the map
 function clearTiles() {
@@ -196,10 +196,43 @@ function spawnCache(i: number, j: number) {
   // Calculate the center of this cache tile
   const tileCenter = bounds.getCenter();
 
+  // Calculate the point value for this cache (mutable)
+  let pointValue = Math.floor(
+    luck([i, j, "initialValue"].toString()) * 100,
+  );
+
   // Add a rectangle to the map to represent the cache
   const rect = leaflet.rectangle(bounds);
   rect.addTo(map);
   spawnedCaches.push(rect);
+
+  // Add a text label showing the point value
+  const label = leaflet.marker(tileCenter, {
+    icon: leaflet.divIcon({
+      className: "cache-label",
+      html:
+        `<div style="font-size: 15px; font-weight: bold; text-align: center; color: #3388ff; text-shadow: 1px 1px 2px white; pointer-events: none;">${pointValue}</div>`,
+      iconSize: [30, 30],
+    }),
+  });
+  label.addTo(map);
+  spawnedCaches.push(label); // Track label for cleanup
+
+  // Disable pointer events on the label marker so clicks pass through to rectangles
+  const labelElement = label.getElement();
+  if (labelElement) {
+    labelElement.style.pointerEvents = "none";
+  }
+
+  // Function to update the label when point value changes
+  function updateLabel() {
+    label.setIcon(leaflet.divIcon({
+      className: "cache-label",
+      html:
+        `<div style="font-size: 15px; font-weight: bold; text-align: center; color: #3388ff; text-shadow: 1px 1px 2px white; pointer-events: none;">${pointValue}</div>`,
+      iconSize: [30, 30],
+    }));
+  }
 
   // Handle interactions with the cache
   rect.bindPopup(() => {
@@ -215,10 +248,6 @@ function spawnCache(i: number, j: number) {
         `<div>This cache at "${i},${j}" is too far away!</div>`;
       return outOfRangeDiv;
     }
-    // Each cache has a random point value, mutable by the player
-    let pointValue = Math.floor(
-      luck([i, j, "initialValue"].toString()) * 100,
-    );
 
     // The popup offers a description and button
     const popupDiv = document.createElement("div");
@@ -235,6 +264,7 @@ function spawnCache(i: number, j: number) {
           pointValue.toString();
         playerPoints++;
         statusPanelDiv.innerHTML = `${playerPoints} points accumulated`;
+        updateLabel(); // Update the label on the map
       });
 
     return popupDiv;
