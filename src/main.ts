@@ -427,6 +427,7 @@ function spawnCache(i: number, j: number) {
               pointValue.toString();
             statusPanelDiv.innerHTML = `${playerPoints} points accumulated`;
             updateLabel(); // Update the label on the map
+            rect.closePopup(); // Close the popup
           } else {
             alert("Your hands are full!");
           }
@@ -447,6 +448,7 @@ function spawnCache(i: number, j: number) {
               pointValue.toString();
             statusPanelDiv.innerHTML = `No points yet...`;
             updateLabel(); // Update the label on the map
+            rect.closePopup(); // Close the popup
           } else {
             alert("You can only place points into a cache of equal value!");
           }
