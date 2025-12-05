@@ -196,44 +196,47 @@ function spawnCache(i: number, j: number) {
   // Calculate the center of this cache tile
   const tileCenter = bounds.getCenter();
 
-  // Calculate distance from player to tile center
-  const distanceToPlayer = PLAYER_LATLNG.distanceTo(tileCenter);
-
-  // Only make cache interactive if it's within the green circle radius
-  const INTERACTION_RADIUS = 3 * TILE_DEGREES * 111000; // Same as green circle radius
-  const isWithinRange = distanceToPlayer <= INTERACTION_RADIUS;
-
   // Add a rectangle to the map to represent the cache
   const rect = leaflet.rectangle(bounds);
   rect.addTo(map);
   spawnedCaches.push(rect);
 
-  // Handle interactions with the cache (only if within range)
-  if (isWithinRange) {
-    rect.bindPopup(() => {
-      // Each cache has a random point value, mutable by the player
-      let pointValue = Math.floor(
-        luck([i, j, "initialValue"].toString()) * 100,
-      );
+  // Handle interactions with the cache
+  rect.bindPopup(() => {
+    // Check if cache is within interaction range at click time
+    const INTERACTION_RADIUS = 3 * TILE_DEGREES * 111000; // Same as green circle radius
+    const distanceToPlayer = PLAYER_LATLNG.distanceTo(tileCenter);
+    const isWithinRange = distanceToPlayer <= INTERACTION_RADIUS;
 
-      // The popup offers a description and button
-      const popupDiv = document.createElement("div");
-      popupDiv.innerHTML = `
+    // If not in range, show a message instead of allowing interaction
+    if (!isWithinRange) {
+      const outOfRangeDiv = document.createElement("div");
+      outOfRangeDiv.innerHTML =
+        `<div>This cache at "${i},${j}" is too far away!</div>`;
+      return outOfRangeDiv;
+    }
+    // Each cache has a random point value, mutable by the player
+    let pointValue = Math.floor(
+      luck([i, j, "initialValue"].toString()) * 100,
+    );
+
+    // The popup offers a description and button
+    const popupDiv = document.createElement("div");
+    popupDiv.innerHTML = `
                 <div>There is a cache here at "${i},${j}". It has value <span id="value">${pointValue}</span>.</div>
                 <button id="poke">poke</button>`;
 
-      // Clicking the button decrements the cache's value and increments the player's points
-      popupDiv
-        .querySelector<HTMLButtonElement>("#poke")!
-        .addEventListener("click", () => {
-          pointValue--;
-          popupDiv.querySelector<HTMLSpanElement>("#value")!.innerHTML =
-            pointValue.toString();
-          playerPoints++;
-          statusPanelDiv.innerHTML = `${playerPoints} points accumulated`;
-        });
+    // Clicking the button decrements the cache's value and increments the player's points
+    popupDiv
+      .querySelector<HTMLButtonElement>("#poke")!
+      .addEventListener("click", () => {
+        pointValue--;
+        popupDiv.querySelector<HTMLSpanElement>("#value")!.innerHTML =
+          pointValue.toString();
+        playerPoints++;
+        statusPanelDiv.innerHTML = `${playerPoints} points accumulated`;
+      });
 
-      return popupDiv;
-    });
-  }
+    return popupDiv;
+  });
 }
