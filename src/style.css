@@ -50,3 +50,68 @@
   display: flex;
   gap: 5px;
 }
+
+#victoryScreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+#victoryContent {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  animation: victoryPop 0.5s ease-out;
+}
+
+@keyframes victoryPop {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+#victoryContent h1 {
+  font-size: 48px;
+  margin: 0 0 20px 0;
+  color: #ffd700;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+#victoryContent p {
+  font-size: 24px;
+  margin: 0 0 30px 0;
+  color: #333;
+}
+
+#playAgain {
+  font-size: 20px;
+  padding: 15px 30px;
+  background: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#playAgain:hover {
+  background: #45a049;
+}
+
+#playAgain:active {
+  background: #3d8b40;
+}

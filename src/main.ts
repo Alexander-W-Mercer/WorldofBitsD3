@@ -44,6 +44,35 @@ navigationDiv.innerHTML = `
 `;
 document.body.append(navigationDiv);
 
+// Create victory screen (hidden by default)
+const victoryScreen = document.createElement("div");
+victoryScreen.id = "victoryScreen";
+victoryScreen.style.display = "none";
+victoryScreen.innerHTML = `
+  <div id="victoryContent">
+    <h1>🎉 Victory! 🎉</h1>
+    <p>Congratulations, you've won!</p>
+    <button id="playAgain">Play Again</button>
+  </div>
+`;
+document.body.append(victoryScreen);
+
+// Function to show victory screen (call this to trigger victory)
+// deno-lint-ignore no-unused-vars
+function showVictory() {
+  victoryScreen.style.display = "flex";
+}
+
+// Play again button reloads the page
+document.addEventListener("DOMContentLoaded", () => {
+  const playAgainBtn = document.getElementById("playAgain");
+  if (playAgainBtn) {
+    playAgainBtn.addEventListener("click", () => {
+      location.reload();
+    });
+  }
+});
+
 // Our current location (start with a fallback; update from device geolocation when available)
 let PLAYER_BASE_LATLNG = leaflet.latLng(
   36.997936938057016,
@@ -428,6 +457,9 @@ function spawnCache(i: number, j: number) {
             statusPanelDiv.innerHTML = `${playerPoints} points accumulated`;
             updateLabel(); // Update the label on the map
             rect.closePopup(); // Close the popup
+            if (playerPoints >= 64) {
+              showVictory();
+            }
           } else {
             alert("Your hands are full!");
           }
@@ -449,6 +481,9 @@ function spawnCache(i: number, j: number) {
             statusPanelDiv.innerHTML = `No points yet...`;
             updateLabel(); // Update the label on the map
             rect.closePopup(); // Close the popup
+            if (pointValue >= 64) {
+              showVictory();
+            }
           } else {
             alert("You can only place points into a cache of equal value!");
           }
