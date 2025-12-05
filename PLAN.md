@@ -54,6 +54,10 @@ Key gameplay challenge: Can players collect and craft tokens from nearby locatio
 
 ### D3.c
 
-- [ ] Design a class that works as an interface for a flyweight pattern, allowing for efficient recreation of all the tiles with the same assets / designs and whatnot
-- [ ] Design a restore function for this class that holds a whole array (map?) that would be the momento 'caretaker' for all the 'momentos' (the tiles)
-- [ ] make it so that the tile / momento is only saved to this caretaker array after one of the three buttons on it has been clicked (destroy, take, place)
+- [x] Design a class that works as an interface for a flyweight pattern, allowing for efficient recreation of all the tiles with the same assets / designs and whatnot
+- [x] Design a restore function for this class that holds a whole array (map?) that would be the momento 'caretaker' for all the 'momentos' (the tiles)
+- [ ] Complete the TileType instance that is inheranted by all tiles
+- [ ] Make an instance of the TileCaretaker class so I can track the different tile momentos
+- [ ] refactor the spawncache so that it actually uses the new flyweight stuff
+- [ ] make it so that the tile / momento is only saved to the caretaker array after one of the three buttons on it has been clicked (destroy, take, place)
+- [ ] Use the caretakers saved states to rebuild the tiles when moving back over an area
