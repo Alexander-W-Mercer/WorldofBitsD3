@@ -135,7 +135,26 @@ if (typeof navigator !== "undefined" && "geolocation" in navigator) {
   navigator.geolocation.watchPosition(
     (position) => {
       const { latitude, longitude } = position.coords;
-      PLAYER_BASE_LATLNG = leaflet.latLng(latitude, longitude);
+      const newPosition = leaflet.latLng(latitude, longitude);
+
+      // Filter out large GPS jumps - only update if within 100 meters of current position
+      const MAX_POSITION_JUMP = 100; // meters
+      const distanceFromCurrent = PLAYER_BASE_LATLNG.distanceTo(newPosition);
+
+      if (distanceFromCurrent > MAX_POSITION_JUMP) {
+        console.warn(
+          `GPS jump detected: ${
+            distanceFromCurrent.toFixed(1)
+          }m - ignoring update`,
+        );
+        geoStatusDiv.innerHTML = `⚠️ GPS jump ignored (${
+          distanceFromCurrent.toFixed(0)
+        }m)`;
+        geoStatusDiv.style.color = "orange";
+        return; // Skip this update
+      }
+
+      PLAYER_BASE_LATLNG = newPosition;
       PLAYER_LATLNG = getPlayerLatLng();
 
       // Update the map view and player marker if they exist. These are declared

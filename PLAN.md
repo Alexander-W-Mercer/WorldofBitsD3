@@ -46,7 +46,7 @@ Key gameplay challenge: Can players collect and craft tokens from nearby locatio
 - [x] make the rectangles worldwide, just only show up near player
 - [x] fix whatever broke with not displaying the rectangles on the full screen
 - [x] change color of non-reachable tiles just for fun
-- [ ] with recommendations from copilot, 'increase position accuracy filtering' by only updating if a GPS jump is within a certain distance of my last known location because that might help with the issue of the constant jumping to new locations
+- [x] with recommendations from copilot, 'increase position accuracy filtering' by only updating if a GPS jump is within a certain distance of my last known location because that might help with the issue of the constant jumping to new locations
 - [ ] make the text box go away when you either take or place a number because it is starting to annoy me
 - [ ] make it possible to pick up a number of the same type while holding one otherwise I'm not sure how I'm going to get to test getting to 64 due to how the numbers like to delete themselves.
 - [ ] make victory screen upon crafting a tile that is equal to 64
