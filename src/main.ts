@@ -162,25 +162,82 @@ function spawnTiles() {
 }
 
 //////////////////////////////////////////////////////////////////
+// FLYWEIGHT PATTERN: Shared immutable styling/configuration for tiles
+//////////////////////////////////////////////////////////////////
 
-// Shared immutable data - ONE copy for all tiles of this type
+// Flyweight - ONE copy for all tiles of this type
 class _TileType {
   constructor(
-    public readonly inRangeColor: string, //"#3388ff"
-    public readonly outOfRangeColor: string, //"#ff3333ff"
-    public readonly texture: CanvasPattern | null, // expensive! share this
+    public readonly inRangeColor: string, // "#3388ff"
+    public readonly outOfRangeColor: string, // "#ff3333ff"
+    public readonly tileDegrees: number, // TILE_DEGREES constant
+    public readonly interactionRadius: number, // Radius for interaction,
+  ) {}
+
+  // Method to get rectangle options based on whether tile is in range
+  getRectangleOptions(isWithinRange: boolean): leaflet.PolylineOptions {
+    return {
+      color: isWithinRange ? this.inRangeColor : this.outOfRangeColor,
+    };
+  }
+
+  // Method to get label color based on whether tile is in range
+  getLabelColor(isWithinRange: boolean): string {
+    return isWithinRange ? this.inRangeColor : this.outOfRangeColor;
+  }
+}
+
+//////////////////////////////////////////////////////////////////
+// MEMENTO PATTERN: Save and restore tile state
+//////////////////////////////////////////////////////////////////
+
+// Memento - stores the state of a tile (coordinates and point value)
+class TileMemento {
+  constructor(
+    public readonly i: number,
+    public readonly j: number,
+    public readonly pointValue: number,
   ) {}
 }
 
-// Lightweight instance - THOUSANDS can exist
+// Individual tile instance
 class _Tile {
-  value: number = 0; // dynamic state (e.g. resource level)
-
   constructor(
-    public readonly type: _TileType, // reference to shared data
-    public readonly x: number,
-    public readonly y: number,
+    public readonly type: _TileType, // Reference to shared flyweight
+    public readonly i: number, // Grid coordinate
+    public readonly j: number, // Grid coordinate
+    public value: number, // Current point value (mutable)
   ) {}
+
+  // Create a memento of current state
+  save(): TileMemento {
+    return new TileMemento(this.i, this.j, this.value);
+  }
+
+  // Restore from memento
+  restore(memento: TileMemento): void {
+    this.value = memento.pointValue;
+  }
+}
+
+// Caretaker - manages saved tile states
+class _TileCaretaker {
+  private savedStates: Map<string, TileMemento> = new Map();
+
+  // Save a tile's state with a key (e.g., "i,j")
+  saveState(key: string, memento: TileMemento): void {
+    this.savedStates.set(key, memento);
+  }
+
+  // Retrieve a saved state
+  getState(key: string): TileMemento | undefined {
+    return this.savedStates.get(key);
+  }
+
+  // Check if a state exists
+  hasState(key: string): boolean {
+    return this.savedStates.has(key);
+  }
 }
 
 //////////////////////////////////////////////////////////////////
