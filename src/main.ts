@@ -262,21 +262,41 @@ function spawnCache(i: number, j: number) {
     const popupDiv = document.createElement("div");
     popupDiv.innerHTML = `
                 <div>There is a cache here at "${i},${j}". It has value <span id="value">${pointValue}</span>.</div>
-                <button id="take">Take</button>`;
+                <button id="take">Take</button> <button id="place">Place</button>`;
 
-    // Clicking the button decrements the cache's value and increments the player's points
+    // Take button: remove coins from cache and add to player inventory
     popupDiv
       .querySelector<HTMLButtonElement>("#take")!
       .addEventListener("click", () => {
         if (pointValue >= 1) {
-          playerPoints = pointValue;
-          pointValue = 0;
-          popupDiv.querySelector<HTMLSpanElement>("#value")!.innerHTML =
-            pointValue.toString();
-          statusPanelDiv.innerHTML = `${playerPoints} points accumulated`;
-          updateLabel(); // Update the label on the map
+          if (playerPoints === 0) {
+            playerPoints = pointValue;
+            pointValue = 0;
+            popupDiv.querySelector<HTMLSpanElement>("#value")!.innerHTML =
+              pointValue.toString();
+            statusPanelDiv.innerHTML = `${playerPoints} points accumulated`;
+            updateLabel(); // Update the label on the map
+          } else {
+            alert("Your hands are full!");
+          }
         } else {
           alert("This cache is fully depleted!");
+        }
+      });
+
+    // Place button: add player's coins to the cache
+    popupDiv
+      .querySelector<HTMLButtonElement>("#place")!
+      .addEventListener("click", () => {
+        if (playerPoints > 0) {
+          pointValue += playerPoints;
+          playerPoints = 0;
+          popupDiv.querySelector<HTMLSpanElement>("#value")!.innerHTML =
+            pointValue.toString();
+          statusPanelDiv.innerHTML = `No points yet...`;
+          updateLabel(); // Update the label on the map
+        } else {
+          alert("You have no points to place!");
         }
       });
 
