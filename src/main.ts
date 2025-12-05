@@ -326,17 +326,25 @@ function spawnCache(i: number, j: number) {
 
   pointValue = Math.pow(2, pointValue); // Square the value for more variance
 
+  // Check if this tile is within interaction range
+  const INTERACTION_RADIUS = 3 * TILE_DEGREES * 111000; // Same as green circle radius
+  const distanceToPlayer = PLAYER_LATLNG.distanceTo(tileCenter);
+  const isWithinRange = distanceToPlayer <= INTERACTION_RADIUS;
+
   // Add a rectangle to the map to represent the cache
-  const rect = leaflet.rectangle(bounds);
+  const rect = leaflet.rectangle(bounds, {
+    color: isWithinRange ? "#3388ff" : "#ff3333ff", // Blue if in range, red if out of range
+  });
   rect.addTo(map);
   spawnedCaches.push(rect);
 
   // Add a text label showing the point value
+  const labelColor = isWithinRange ? "#3388ff" : "#ff3333ff"; // Match tile color
   const label = leaflet.marker(tileCenter, {
     icon: leaflet.divIcon({
       className: "cache-label",
       html:
-        `<div style="font-size: 15px; font-weight: bold; text-align: center; color: #3388ff; text-shadow: 1px 1px 2px white; pointer-events: none;">${pointValue}</div>`,
+        `<div style="font-size: 15px; font-weight: bold; text-align: center; color: ${labelColor}; text-shadow: 1px 1px 2px white; pointer-events: none;">${pointValue}</div>`,
       iconSize: [30, 30],
     }),
   });
@@ -354,7 +362,7 @@ function spawnCache(i: number, j: number) {
     label.setIcon(leaflet.divIcon({
       className: "cache-label",
       html:
-        `<div style="font-size: 15px; font-weight: bold; text-align: center; color: #3388ff; text-shadow: 1px 1px 2px white; pointer-events: none;">${pointValue}</div>`,
+        `<div style="font-size: 15px; font-weight: bold; text-align: center; color: ${labelColor}; text-shadow: 1px 1px 2px white; pointer-events: none;">${pointValue}</div>`,
       iconSize: [30, 30],
     }));
   }
