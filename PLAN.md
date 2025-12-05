@@ -60,4 +60,4 @@ Key gameplay challenge: Can players collect and craft tokens from nearby locatio
 - [x] Make an instance of the TileCaretaker class so I can track the different tile momentos
 - [x] refactor the spawncache so that it actually uses the new flyweight stuff
 - [x] make it so that the tile / momento is only saved to the caretaker array after one of the three buttons on it has been clicked (destroy, take, place)
-- [ ] Use the caretakers saved states to rebuild the tiles when moving back over an area
+- [x] Use the caretakers saved states to rebuild the tiles when moving back over an area

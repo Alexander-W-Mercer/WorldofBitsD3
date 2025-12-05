@@ -474,11 +474,22 @@ function spawnCache(i: number, j: number) {
   const tileCenter = bounds.getCenter();
 
   // Calculate the point value for this cache (mutable)
-  let pointValue = Math.floor(
-    luck([i, j, "initialValue"].toString()) * 4,
-  );
+  let pointValue: number;
 
-  pointValue = Math.pow(2, pointValue); // Square the value for more variance
+  // Check if we have a saved state for this tile
+  const tileKey = `${i},${j}`;
+  const savedState = tileCaretaker.getState(tileKey);
+
+  if (savedState) {
+    // Restore from saved state
+    pointValue = savedState.pointValue;
+  } else {
+    // Generate new random value
+    pointValue = Math.floor(
+      luck([i, j, "initialValue"].toString()) * 4,
+    );
+    pointValue = Math.pow(2, pointValue); // Square the value for more variance
+  }
 
   // Check if this tile is within interaction range
   const INTERACTION_RADIUS = sharedTileType.interactionRadius; // Same as green circle radius
