@@ -25,7 +25,7 @@ Key gameplay challenge: Can players collect and craft tokens from nearby locatio
 - [x] draw the player's location on the map
 - [x] Replace the rectangles to be around the player
 - [x] use loops to draw a whole grid of cells on the map
-- [ ] make a radius circle that shows the area that's clickable within for the player
+- [x] make a radius circle that shows the area that's clickable within for the player
 - [ ] make a list that holds data points associated with each grid
 - [ ] visually show those points.
 - [ ] make them clickable

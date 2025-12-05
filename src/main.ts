@@ -113,6 +113,14 @@ if (typeof navigator !== "undefined" && "geolocation" in navigator) {
         // playerMarker may not exist yet; it's fine.
       }
 
+      try {
+        if (playerCircle && typeof playerCircle.setLatLng === "function") {
+          playerCircle.setLatLng(PLAYER_LATLNG);
+        }
+      } catch (_e) {
+        // playerCircle may not exist yet; it's fine.
+      }
+
       // Clear old tiles and spawn tiles at the updated location
       clearTiles();
       spawnTiles();
@@ -160,6 +168,17 @@ leaflet
 const playerMarker = leaflet.marker(PLAYER_LATLNG);
 playerMarker.bindTooltip("Your current location!");
 playerMarker.addTo(map);
+
+// Add a green circle around the player with radius of ~3 tiles
+const playerCircle = leaflet.circle(PLAYER_LATLNG, {
+  radius: 3 * TILE_DEGREES * 111000, // Convert degrees to meters (roughly 111km per degree)
+  color: "green",
+  fill: true,
+  fillColor: "green",
+  fillOpacity: 0.2,
+  weight: 2,
+});
+playerCircle.addTo(map);
 
 // Display the player's points
 let playerPoints = 0;
