@@ -68,28 +68,57 @@ function clearTiles() {
   spawnedCaches.length = 0;
 }
 
-// Function to spawn tiles dynamically based on player's position
+// Function to spawn tiles dynamically across the full visible screen
 function spawnTiles() {
-  // Step 1: Convert player's lat/lng to tile coordinates relative to null island
-  // Each tile is TILE_DEGREES in size, so we divide the player's coordinates by that
-  const playerTileI = Math.floor(PLAYER_LATLNG.lat / TILE_DEGREES);
-  const playerTileJ = Math.floor(PLAYER_LATLNG.lng / TILE_DEGREES);
+  try {
+    // Step 1: Get the map's current visible bounds (what's on screen)
+    const bounds = map.getBounds();
+    const northWest = bounds.getNorthWest(); // Top-left corner
+    const southEast = bounds.getSouthEast(); // Bottom-right corner
 
-  // Step 2: Spawn tiles in a neighborhood around the player's current tile position
-  // We loop from (playerTile - NEIGHBORHOOD_SIZE) to (playerTile + NEIGHBORHOOD_SIZE)
-  for (
-    let i = playerTileI - NEIGHBORHOOD_SIZE;
-    i < playerTileI + NEIGHBORHOOD_SIZE;
-    i++
-  ) {
+    // Step 2: Convert the screen bounds to tile coordinates
+    // Divide lat/lng by TILE_DEGREES to get tile indices from null island
+    // northWest has the highest lat (north is positive), southEast has lowest lat
+    const visibleMinLat = Math.floor(southEast.lat / TILE_DEGREES); // Bottom edge
+    const visibleMaxLat = Math.ceil(northWest.lat / TILE_DEGREES); // Top edge
+    const visibleMinLng = Math.floor(northWest.lng / TILE_DEGREES); // Left edge
+    const visibleMaxLng = Math.ceil(southEast.lng / TILE_DEGREES); // Right edge
+
+    // Step 2.5: Add buffer zone to extend tiles off-screen
+    // This prevents blank spots when moving - tiles load before they're visible
+    const TILE_BUFFER = 5; // Number of extra tiles to spawn beyond visible area
+    const minLat = visibleMinLat - TILE_BUFFER;
+    const maxLat = visibleMaxLat + TILE_BUFFER;
+    const minLng = visibleMinLng - TILE_BUFFER;
+    const maxLng = visibleMaxLng + TILE_BUFFER;
+
+    // Step 3: Spawn tiles for every grid cell including buffer zone
+    for (let i = minLat; i < maxLat; i++) {
+      for (let j = minLng; j < maxLng; j++) {
+        // Use luck function to determine if this tile gets a cache
+        if (luck([i, j].toString()) < CACHE_SPAWN_PROBABILITY) {
+          spawnCache(i, j);
+        }
+      }
+    }
+  } catch (_e) {
+    // If map isn't ready yet, fall back to spawning around player
+    const playerTileI = Math.floor(PLAYER_LATLNG.lat / TILE_DEGREES);
+    const playerTileJ = Math.floor(PLAYER_LATLNG.lng / TILE_DEGREES);
+
     for (
-      let j = playerTileJ - NEIGHBORHOOD_SIZE;
-      j < playerTileJ + NEIGHBORHOOD_SIZE;
-      j++
+      let i = playerTileI - NEIGHBORHOOD_SIZE;
+      i < playerTileI + NEIGHBORHOOD_SIZE;
+      i++
     ) {
-      // Step 3: Use the luck function to determine if this tile gets a cache
-      if (luck([i, j].toString()) < CACHE_SPAWN_PROBABILITY) {
-        spawnCache(i, j);
+      for (
+        let j = playerTileJ - NEIGHBORHOOD_SIZE;
+        j < playerTileJ + NEIGHBORHOOD_SIZE;
+        j++
+      ) {
+        if (luck([i, j].toString()) < CACHE_SPAWN_PROBABILITY) {
+          spawnCache(i, j);
+        }
       }
     }
   }
@@ -139,6 +168,7 @@ if (typeof navigator !== "undefined" && "geolocation" in navigator) {
     },
     (err) => {
       console.warn("Geolocation failed, using fallback location:", err);
+
       // Spawn tiles at the fallback location if not already spawned
       if (spawnedCaches.length === 0) {
         clearTiles();
