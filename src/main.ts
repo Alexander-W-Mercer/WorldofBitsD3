@@ -289,7 +289,7 @@ function spawnCache(i: number, j: number) {
       .querySelector<HTMLButtonElement>("#place")!
       .addEventListener("click", () => {
         if (playerPoints > 0) {
-          if (pointValue === playerPoints) {
+          if (pointValue === playerPoints || pointValue === 0) {
             pointValue += playerPoints;
             playerPoints = 0;
             popupDiv.querySelector<HTMLSpanElement>("#value")!.innerHTML =
