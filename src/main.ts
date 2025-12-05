@@ -86,7 +86,8 @@ function spawnTiles() {
 }
 
 if (typeof navigator !== "undefined" && "geolocation" in navigator) {
-  navigator.geolocation.getCurrentPosition(
+  // Use watchPosition for continuous location updates
+  navigator.geolocation.watchPosition(
     (position) => {
       const { latitude, longitude } = position.coords;
       PLAYER_LATLNG = leaflet.latLng(latitude, longitude);
@@ -127,11 +128,17 @@ if (typeof navigator !== "undefined" && "geolocation" in navigator) {
     },
     (err) => {
       console.warn("Geolocation failed, using fallback location:", err);
-      // Clear old tiles and spawn tiles at the fallback location
-      clearTiles();
-      spawnTiles();
+      // Spawn tiles at the fallback location if not already spawned
+      if (spawnedCaches.length === 0) {
+        clearTiles();
+        spawnTiles();
+      }
     },
-    { enableHighAccuracy: true, maximumAge: 60000, timeout: 10000 },
+    {
+      enableHighAccuracy: true,
+      maximumAge: 0, // Always get fresh position, no cached location
+      timeout: 20000, // Increased timeout for better accuracy
+    },
   );
 } else {
   console.warn("Geolocation not supported — using fallback location");
