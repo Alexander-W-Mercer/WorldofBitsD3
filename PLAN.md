@@ -25,7 +25,10 @@ Key gameplay challenge: Can players collect and craft tokens from nearby locatio
 - [ ] draw the player's location on the map
 - [ ] draw a rectangle representing one cell on the map
 - [ ] use loops to draw a whole grid of cells on the map
-- ...
+- [ ] make a list that holds data points associated with each grid
+- [ ] visually show those points.
+- [ ] make them clickable
+- [ ] Make the tokens randomly generate with the luck-style points
 
 ## D3.b
 
