@@ -68,11 +68,26 @@ function clearTiles() {
   spawnedCaches.length = 0;
 }
 
-// Function to spawn tiles in a fixed neighborhood around null island
+// Function to spawn tiles dynamically based on player's position
 function spawnTiles() {
-  for (let i = -NEIGHBORHOOD_SIZE; i < NEIGHBORHOOD_SIZE; i++) {
-    for (let j = -NEIGHBORHOOD_SIZE; j < NEIGHBORHOOD_SIZE; j++) {
-      // If location i,j is lucky enough, spawn a cache!
+  // Step 1: Convert player's lat/lng to tile coordinates relative to null island
+  // Each tile is TILE_DEGREES in size, so we divide the player's coordinates by that
+  const playerTileI = Math.floor(PLAYER_LATLNG.lat / TILE_DEGREES);
+  const playerTileJ = Math.floor(PLAYER_LATLNG.lng / TILE_DEGREES);
+
+  // Step 2: Spawn tiles in a neighborhood around the player's current tile position
+  // We loop from (playerTile - NEIGHBORHOOD_SIZE) to (playerTile + NEIGHBORHOOD_SIZE)
+  for (
+    let i = playerTileI - NEIGHBORHOOD_SIZE;
+    i < playerTileI + NEIGHBORHOOD_SIZE;
+    i++
+  ) {
+    for (
+      let j = playerTileJ - NEIGHBORHOOD_SIZE;
+      j < playerTileJ + NEIGHBORHOOD_SIZE;
+      j++
+    ) {
+      // Step 3: Use the luck function to determine if this tile gets a cache
       if (luck([i, j].toString()) < CACHE_SPAWN_PROBABILITY) {
         spawnCache(i, j);
       }
