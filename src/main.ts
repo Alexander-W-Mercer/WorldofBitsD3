@@ -161,6 +161,30 @@ function spawnTiles() {
   }
 }
 
+//////////////////////////////////////////////////////////////////
+
+// Shared immutable data - ONE copy for all tiles of this type
+class _TileType {
+  constructor(
+    public readonly inRangeColor: string, //"#3388ff"
+    public readonly outOfRangeColor: string, //"#ff3333ff"
+    public readonly texture: CanvasPattern | null, // expensive! share this
+  ) {}
+}
+
+// Lightweight instance - THOUSANDS can exist
+class _Tile {
+  value: number = 0; // dynamic state (e.g. resource level)
+
+  constructor(
+    public readonly type: _TileType, // reference to shared data
+    public readonly x: number,
+    public readonly y: number,
+  ) {}
+}
+
+//////////////////////////////////////////////////////////////////
+
 if (typeof navigator !== "undefined" && "geolocation" in navigator) {
   // Track if we've received the first GPS update
   let firstGPSUpdate = true;
