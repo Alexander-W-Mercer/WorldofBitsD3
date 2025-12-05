@@ -131,28 +131,36 @@ function spawnTiles() {
 }
 
 if (typeof navigator !== "undefined" && "geolocation" in navigator) {
+  // Track if we've received the first GPS update
+  let firstGPSUpdate = true;
+
   // Use watchPosition for continuous location updates
   navigator.geolocation.watchPosition(
     (position) => {
       const { latitude, longitude } = position.coords;
       const newPosition = leaflet.latLng(latitude, longitude);
 
-      // Filter out large GPS jumps - only update if within 100 meters of current position
-      const MAX_POSITION_JUMP = 100; // meters
-      const distanceFromCurrent = PLAYER_BASE_LATLNG.distanceTo(newPosition);
+      // Allow first GPS update to always go through (replacing fallback position)
+      if (!firstGPSUpdate) {
+        // Filter out large GPS jumps - only update if within 100 meters of current position
+        const MAX_POSITION_JUMP = 100; // meters
+        const distanceFromCurrent = PLAYER_BASE_LATLNG.distanceTo(newPosition);
 
-      if (distanceFromCurrent > MAX_POSITION_JUMP) {
-        console.warn(
-          `GPS jump detected: ${
-            distanceFromCurrent.toFixed(1)
-          }m - ignoring update`,
-        );
-        geoStatusDiv.innerHTML = `⚠️ GPS jump ignored (${
-          distanceFromCurrent.toFixed(0)
-        }m)`;
-        geoStatusDiv.style.color = "orange";
-        return; // Skip this update
+        if (distanceFromCurrent > MAX_POSITION_JUMP) {
+          console.warn(
+            `GPS jump detected: ${
+              distanceFromCurrent.toFixed(1)
+            }m - ignoring update`,
+          );
+          geoStatusDiv.innerHTML = `⚠️ GPS jump ignored (${
+            distanceFromCurrent.toFixed(0)
+          }m)`;
+          geoStatusDiv.style.color = "orange";
+          return; // Skip this update
+        }
       }
+
+      firstGPSUpdate = false; // Mark that we've processed the first update
 
       PLAYER_BASE_LATLNG = newPosition;
       PLAYER_LATLNG = getPlayerLatLng();
