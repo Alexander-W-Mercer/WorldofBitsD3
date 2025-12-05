@@ -39,7 +39,23 @@ navigationDiv.innerHTML = `
 document.body.append(navigationDiv);
 
 // Our current location (start with a fallback; update from device geolocation when available)
-let PLAYER_LATLNG = leaflet.latLng(36.997936938057016, -122.05703507501151);
+let PLAYER_BASE_LATLNG = leaflet.latLng(
+  36.997936938057016,
+  -122.05703507501151,
+);
+
+// Offset for player position (can be modified by movement controls)
+const playerOffset = { lat: 0, lng: 0 };
+
+// Calculate actual player position (base + offset)
+function getPlayerLatLng(): leaflet.LatLng {
+  return leaflet.latLng(
+    PLAYER_BASE_LATLNG.lat + playerOffset.lat,
+    PLAYER_BASE_LATLNG.lng + playerOffset.lng,
+  );
+}
+
+let PLAYER_LATLNG = getPlayerLatLng();
 
 // Track spawned cache rectangles and labels so we can clear them when respawning
 const spawnedCaches: (leaflet.Rectangle | leaflet.Marker)[] = [];
@@ -103,7 +119,8 @@ if (typeof navigator !== "undefined" && "geolocation" in navigator) {
   navigator.geolocation.watchPosition(
     (position) => {
       const { latitude, longitude } = position.coords;
-      PLAYER_LATLNG = leaflet.latLng(latitude, longitude);
+      PLAYER_BASE_LATLNG = leaflet.latLng(latitude, longitude);
+      PLAYER_LATLNG = getPlayerLatLng();
 
       // Update the map view and player marker if they exist. These are declared
       // later in the file, but this callback runs asynchronously after
@@ -199,6 +216,49 @@ const playerCircle = leaflet.circle(PLAYER_LATLNG, {
   weight: 2,
 });
 playerCircle.addTo(map);
+
+// Add directional controls to modify the offset
+const MOVE_DISTANCE = TILE_DEGREES * 10; // Move by 10 tiles
+
+document.getElementById("north")!.addEventListener("click", () => {
+  playerOffset.lat += MOVE_DISTANCE;
+  PLAYER_LATLNG = getPlayerLatLng();
+  map.setView(PLAYER_LATLNG, GAMEPLAY_ZOOM_LEVEL);
+  playerMarker.setLatLng(PLAYER_LATLNG);
+  playerCircle.setLatLng(PLAYER_LATLNG);
+  clearTiles();
+  spawnTiles();
+});
+
+document.getElementById("south")!.addEventListener("click", () => {
+  playerOffset.lat -= MOVE_DISTANCE;
+  PLAYER_LATLNG = getPlayerLatLng();
+  map.setView(PLAYER_LATLNG, GAMEPLAY_ZOOM_LEVEL);
+  playerMarker.setLatLng(PLAYER_LATLNG);
+  playerCircle.setLatLng(PLAYER_LATLNG);
+  clearTiles();
+  spawnTiles();
+});
+
+document.getElementById("west")!.addEventListener("click", () => {
+  playerOffset.lng -= MOVE_DISTANCE;
+  PLAYER_LATLNG = getPlayerLatLng();
+  map.setView(PLAYER_LATLNG, GAMEPLAY_ZOOM_LEVEL);
+  playerMarker.setLatLng(PLAYER_LATLNG);
+  playerCircle.setLatLng(PLAYER_LATLNG);
+  clearTiles();
+  spawnTiles();
+});
+
+document.getElementById("east")!.addEventListener("click", () => {
+  playerOffset.lng += MOVE_DISTANCE;
+  PLAYER_LATLNG = getPlayerLatLng();
+  map.setView(PLAYER_LATLNG, GAMEPLAY_ZOOM_LEVEL);
+  playerMarker.setLatLng(PLAYER_LATLNG);
+  playerCircle.setLatLng(PLAYER_LATLNG);
+  clearTiles();
+  spawnTiles();
+});
 
 // Display the player's points
 let playerPoints = 0;
