@@ -464,6 +464,9 @@ const playerCircle = leaflet.circle(PLAYER_LATLNG, {
 });
 playerCircle.addTo(map);
 
+// Spawn initial tiles
+spawnTiles();
+
 // Add directional controls to modify the offset
 const MOVE_DISTANCE = TILE_DEGREES * 5; // Move by 10 tiles
 
