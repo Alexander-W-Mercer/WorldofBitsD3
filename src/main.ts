@@ -289,7 +289,7 @@ interface IPlayerMovement {
   getCurrentPosition(): leaflet.LatLng;
 }
 
-class PlayerMovementFacade implements IPlayerMovement {
+class _PlayerMovementFacade implements IPlayerMovement {
   constructor() {}
 
   updatePosition(newLatLng: leaflet.LatLng) {
