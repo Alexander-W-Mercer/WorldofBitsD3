@@ -289,7 +289,7 @@ interface IPlayerMovement {
   getCurrentPosition(): leaflet.LatLng;
 }
 
-class _PlayerMovementFacade implements IPlayerMovement {
+class PlayerMovementFacade implements IPlayerMovement {
   constructor() {}
 
   updatePosition(newLatLng: leaflet.LatLng) {
@@ -303,6 +303,25 @@ class _PlayerMovementFacade implements IPlayerMovement {
     } catch (_e) {
       // map may not be ready yet; that's fine — it'll still initialize at the fallback
     }
+
+    try {
+      if (playerMarker && typeof playerMarker.setLatLng === "function") {
+        playerMarker.setLatLng(PLAYER_LATLNG);
+      }
+    } catch (_e) {
+      // playerMarker may not exist yet; it's fine.
+    }
+
+    try {
+      if (playerCircle && typeof playerCircle.setLatLng === "function") {
+        playerCircle.setLatLng(PLAYER_LATLNG);
+      }
+    } catch (_e) {
+      // playerCircle may not exist yet; it's fine.
+    }
+
+    clearTiles();
+    spawnTiles();
   }
 
   moveByOffset(latOffset: number, lngOffset: number) {
@@ -321,6 +340,8 @@ class _PlayerMovementFacade implements IPlayerMovement {
     return PLAYER_LATLNG;
   }
 }
+
+const playerMovement = new PlayerMovementFacade();
 
 //////////////////////////////////////////////////////////////////
 
@@ -358,42 +379,11 @@ if (typeof navigator !== "undefined" && "geolocation" in navigator) {
 
       // Only update position if in GPS mode
       if (movementMode === "gps") {
-        PLAYER_BASE_LATLNG = newPosition;
-        PLAYER_LATLNG = getPlayerLatLng();
+        playerMovement.updatePosition(newPosition);
       } else {
         // In manual mode, just update the base but don't move the player view
         PLAYER_BASE_LATLNG = newPosition;
         return; // Don't update map/markers
-      }
-
-      // Update the map view and player marker if they exist. These are declared
-      // later in the file, but this callback runs asynchronously after
-      // synchronous initialization, so it's safe to call them here.
-      try {
-        // `map` and `playerMarker` are created later; when this callback runs
-        // they will be defined and we can update them to reflect device location.
-        // Use a try/catch to avoid runtime errors if something else changed.
-        if (map && typeof map.setView === "function") {
-          map.setView(PLAYER_LATLNG, GAMEPLAY_ZOOM_LEVEL);
-        }
-      } catch (_e) {
-        // map may not be ready yet; that's fine — it'll still initialize at the fallback
-      }
-
-      try {
-        if (playerMarker && typeof playerMarker.setLatLng === "function") {
-          playerMarker.setLatLng(PLAYER_LATLNG);
-        }
-      } catch (_e) {
-        // playerMarker may not exist yet; it's fine.
-      }
-
-      try {
-        if (playerCircle && typeof playerCircle.setLatLng === "function") {
-          playerCircle.setLatLng(PLAYER_LATLNG);
-        }
-      } catch (_e) {
-        // playerCircle may not exist yet; it's fine.
       }
 
       // Update geolocation status
@@ -401,10 +391,6 @@ if (typeof navigator !== "undefined" && "geolocation" in navigator) {
         longitude.toFixed(6)
       }`;
       geoStatusDiv.style.color = "green";
-
-      // Clear old tiles and spawn tiles at the updated location
-      clearTiles();
-      spawnTiles();
     },
     (err) => {
       console.warn("Geolocation failed, using fallback location:", err);
@@ -510,47 +496,19 @@ spawnTiles();
 const MOVE_DISTANCE = TILE_DEGREES * 5; // Move by 10 tiles
 
 document.getElementById("north")!.addEventListener("click", () => {
-  playerOffset.lat += MOVE_DISTANCE / 2;
-  PLAYER_LATLNG = getPlayerLatLng();
-  map.setView(PLAYER_LATLNG, GAMEPLAY_ZOOM_LEVEL);
-  playerMarker.setLatLng(PLAYER_LATLNG);
-  playerCircle.setLatLng(PLAYER_LATLNG);
-  clearTiles();
-  spawnTiles();
-  saveGameState();
+  playerMovement.moveByOffset(MOVE_DISTANCE / 2, 0);
 });
 
 document.getElementById("south")!.addEventListener("click", () => {
-  playerOffset.lat -= MOVE_DISTANCE / 2;
-  PLAYER_LATLNG = getPlayerLatLng();
-  map.setView(PLAYER_LATLNG, GAMEPLAY_ZOOM_LEVEL);
-  playerMarker.setLatLng(PLAYER_LATLNG);
-  playerCircle.setLatLng(PLAYER_LATLNG);
-  clearTiles();
-  spawnTiles();
-  saveGameState();
+  playerMovement.moveByOffset(-MOVE_DISTANCE / 2, 0);
 });
 
 document.getElementById("west")!.addEventListener("click", () => {
-  playerOffset.lng -= MOVE_DISTANCE;
-  PLAYER_LATLNG = getPlayerLatLng();
-  map.setView(PLAYER_LATLNG, GAMEPLAY_ZOOM_LEVEL);
-  playerMarker.setLatLng(PLAYER_LATLNG);
-  playerCircle.setLatLng(PLAYER_LATLNG);
-  clearTiles();
-  spawnTiles();
-  saveGameState();
+  playerMovement.moveByOffset(0, -MOVE_DISTANCE);
 });
 
 document.getElementById("east")!.addEventListener("click", () => {
-  playerOffset.lng += MOVE_DISTANCE;
-  PLAYER_LATLNG = getPlayerLatLng();
-  map.setView(PLAYER_LATLNG, GAMEPLAY_ZOOM_LEVEL);
-  playerMarker.setLatLng(PLAYER_LATLNG);
-  playerCircle.setLatLng(PLAYER_LATLNG);
-  clearTiles();
-  spawnTiles();
-  saveGameState();
+  playerMovement.moveByOffset(0, MOVE_DISTANCE);
 });
 
 // Display the player's points

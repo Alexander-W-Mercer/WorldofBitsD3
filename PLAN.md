@@ -70,4 +70,4 @@ Key gameplay challenge: Can players collect and craft tokens from nearby locatio
 - [x] add a button that hides or shows the movement keys
 - [x] create a PlayerMovementFacade class
 - [x] create a simple interface with different methods for simplicity
-- [ ] factor all the code to just use the duplicate logic thats in the PlayerMovementFacade class stuff
+- [x] factor all the code to just use the duplicate logic thats in the PlayerMovementFacade class stuff
