@@ -529,6 +529,14 @@ function loadGameState() {
 // Load saved state when game starts
 loadGameState();
 
+// Helper function to save tile state
+function saveTileState(i: number, j: number, pointValue: number) {
+  const tile = new Tile(sharedTileType, i, j, pointValue);
+  const memento = tile.save();
+  tileCaretaker.saveState(`${i},${j}`, memento);
+  saveGameState();
+}
+
 // Add caches to the map by cell numbers
 function spawnCache(i: number, j: number) {
   // Convert cell numbers into lat/lng bounds relative to null island (0, 0)
@@ -636,14 +644,8 @@ function spawnCache(i: number, j: number) {
             updateLabel(); // Update the label on the map
             rect.closePopup(); // Close the popup
 
-            // Create a Tile instance for this cache
-            const tile = new Tile(sharedTileType, i, j, pointValue);
-            // Save the tile's state to the caretaker
-            const memento = tile.save();
-            tileCaretaker.saveState(`${i},${j}`, memento);
-
-            // Save to localStorage
-            saveGameState();
+            // Save tile state
+            saveTileState(i, j, pointValue);
 
             if (playerPoints >= 64) {
               showVictory();
@@ -670,14 +672,8 @@ function spawnCache(i: number, j: number) {
             updateLabel(); // Update the label on the map
             rect.closePopup(); // Close the popup
 
-            // Create a Tile instance for this cache
-            const tile = new Tile(sharedTileType, i, j, pointValue);
-            // Save the tile's state to the caretaker
-            const memento = tile.save();
-            tileCaretaker.saveState(`${i},${j}`, memento);
-
-            // Save to localStorage
-            saveGameState();
+            // Save tile state
+            saveTileState(i, j, pointValue);
 
             if (pointValue >= 64) {
               showVictory();
@@ -701,14 +697,8 @@ function spawnCache(i: number, j: number) {
           updateLabel(); // Update the label on the map
           rect.closePopup(); // Close the popup
 
-          // Create a Tile instance for this cache
-          const tile = new Tile(sharedTileType, i, j, pointValue);
-          // Save the tile's state to the caretaker
-          const memento = tile.save();
-          tileCaretaker.saveState(`${i},${j}`, memento);
-
-          // Save to localStorage
-          saveGameState();
+          // Save tile state
+          saveTileState(i, j, pointValue);
         } else {
           alert("This cache is already empty!");
         }
