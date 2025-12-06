@@ -31,6 +31,12 @@ geoStatusDiv.id = "geoStatus";
 geoStatusDiv.innerHTML = "🔍 Requesting location...";
 document.body.append(geoStatusDiv);
 
+// Create movement mode toggle button
+const modeToggleDiv = document.createElement("div");
+modeToggleDiv.id = "modeToggle";
+modeToggleDiv.innerHTML = `<button id="toggleMode">GPS Mode</button>`;
+document.body.append(modeToggleDiv);
+
 // Create directional controls at the bottom
 const navigationDiv = document.createElement("div");
 navigationDiv.id = "navigation";
@@ -89,6 +95,24 @@ let PLAYER_BASE_LATLNG = leaflet.latLng(
 
 // Offset for player position (can be modified by movement controls)
 const playerOffset = { lat: 0, lng: 0 };
+
+// Movement mode: 'gps' or 'manual'
+let movementMode: "gps" | "manual" = "gps";
+
+// Update navigation visibility based on mode
+function updateNavigationVisibility() {
+  const navDiv = document.getElementById("navigation");
+  const toggleBtn = document.getElementById("toggleMode");
+  if (navDiv && toggleBtn) {
+    if (movementMode === "manual") {
+      navDiv.style.display = "flex";
+      toggleBtn.textContent = "Manual Movement";
+    } else {
+      navDiv.style.display = "none";
+      toggleBtn.textContent = "GPS Movement";
+    }
+  }
+}
 
 // Calculate actual player position (base + offset)
 function getPlayerLatLng(): leaflet.LatLng {
@@ -293,8 +317,15 @@ if (typeof navigator !== "undefined" && "geolocation" in navigator) {
 
       firstGPSUpdate = false; // Mark that we've processed the first update
 
-      PLAYER_BASE_LATLNG = newPosition;
-      PLAYER_LATLNG = getPlayerLatLng();
+      // Only update position if in GPS mode
+      if (movementMode === "gps") {
+        PLAYER_BASE_LATLNG = newPosition;
+        PLAYER_LATLNG = getPlayerLatLng();
+      } else {
+        // In manual mode, just update the base but don't move the player view
+        PLAYER_BASE_LATLNG = newPosition;
+        return; // Don't update map/markers
+      }
 
       // Update the map view and player marker if they exist. These are declared
       // later in the file, but this callback runs asynchronously after
@@ -493,6 +524,7 @@ function saveGameState() {
   const gameState = {
     playerPoints: playerPoints,
     playerOffset: playerOffset,
+    movementMode: movementMode,
     tileStates: tileCaretaker.getAllStates(),
   };
   localStorage.setItem("gameState", JSON.stringify(gameState));
@@ -520,6 +552,11 @@ function loadGameState() {
         PLAYER_LATLNG = getPlayerLatLng();
       }
 
+      // Restore movement mode
+      if (gameState.movementMode) {
+        movementMode = gameState.movementMode;
+      }
+
       // Restore tile states
       if (gameState.tileStates) {
         tileCaretaker.restoreAllStates(gameState.tileStates);
@@ -534,6 +571,16 @@ function loadGameState() {
 
 // Load saved state when game starts
 loadGameState();
+
+// Initialize navigation visibility
+updateNavigationVisibility();
+
+// Movement mode toggle handler
+document.getElementById("toggleMode")!.addEventListener("click", () => {
+  movementMode = movementMode === "gps" ? "manual" : "gps";
+  updateNavigationVisibility();
+  saveGameState(); // Save the mode preference
+});
 
 // Reset button handler
 document.getElementById("resetGame")!.addEventListener("click", () => {
