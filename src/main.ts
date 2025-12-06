@@ -283,6 +283,39 @@ class TileCaretaker {
   }
 }
 
+class _PlayerMovementFacade {
+  constructor() {}
+
+  updatePosition(newLatLng: leaflet.LatLng) {
+    PLAYER_BASE_LATLNG = newLatLng;
+    PLAYER_LATLNG = getPlayerLatLng();
+
+    try {
+      if (map && typeof map.setView === "function") {
+        map.setView(PLAYER_LATLNG, GAMEPLAY_ZOOM_LEVEL);
+      }
+    } catch (_e) {
+      // map may not be ready yet; that's fine — it'll still initialize at the fallback
+    }
+  }
+
+  moveByOffset(latOffset: number, lngOffset: number) {
+    playerOffset.lat += latOffset;
+    playerOffset.lng += lngOffset;
+    PLAYER_LATLNG = getPlayerLatLng();
+    map.setView(PLAYER_LATLNG, GAMEPLAY_ZOOM_LEVEL);
+    playerMarker.setLatLng(PLAYER_LATLNG);
+    playerCircle.setLatLng(PLAYER_LATLNG);
+    clearTiles();
+    spawnTiles();
+    saveGameState();
+  }
+
+  getCurrentPosition(): leaflet.LatLng {
+    return PLAYER_LATLNG;
+  }
+}
+
 //////////////////////////////////////////////////////////////////
 
 if (typeof navigator !== "undefined" && "geolocation" in navigator) {
