@@ -283,7 +283,13 @@ class TileCaretaker {
   }
 }
 
-class _PlayerMovementFacade {
+interface IPlayerMovement {
+  updatePosition(newLatLng: leaflet.LatLng): void;
+  moveByOffset(latOffset: number, lngOffset: number): void;
+  getCurrentPosition(): leaflet.LatLng;
+}
+
+class PlayerMovementFacade implements IPlayerMovement {
   constructor() {}
 
   updatePosition(newLatLng: leaflet.LatLng) {
