@@ -115,3 +115,31 @@
 #playAgain:active {
   background: #3d8b40;
 }
+
+#resetButton {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+}
+
+#resetGame {
+  font-size: 16px;
+  padding: 10px 20px;
+  background: #f44336;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+#resetGame:hover {
+  background: #da190b;
+}
+
+#resetGame:active {
+  background: #c41408;
+}

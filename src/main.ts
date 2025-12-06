@@ -44,6 +44,12 @@ navigationDiv.innerHTML = `
 `;
 document.body.append(navigationDiv);
 
+// Create reset button at the bottom
+const resetButtonDiv = document.createElement("div");
+resetButtonDiv.id = "resetButton";
+resetButtonDiv.innerHTML = `<button id="resetGame">Reset Game</button>`;
+document.body.append(resetButtonDiv);
+
 // Create victory screen (hidden by default)
 const victoryScreen = document.createElement("div");
 victoryScreen.id = "victoryScreen";
@@ -528,6 +534,18 @@ function loadGameState() {
 
 // Load saved state when game starts
 loadGameState();
+
+// Reset button handler
+document.getElementById("resetGame")!.addEventListener("click", () => {
+  if (
+    confirm(
+      "Are you sure you want to reset the game? This will clear all progress.",
+    )
+  ) {
+    localStorage.removeItem("gameState");
+    location.reload();
+  }
+});
 
 // Helper function to save tile state
 function saveTileState(i: number, j: number, pointValue: number) {
