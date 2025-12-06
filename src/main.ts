@@ -770,5 +770,10 @@ function spawnCache(i: number, j: number) {
       });
 
     return popupDiv;
+  }, {
+    autoClose: false,
+    closeOnClick: false,
+    maxWidth: 300,
+    minWidth: 200,
   });
 }
