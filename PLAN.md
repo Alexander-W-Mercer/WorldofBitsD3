@@ -65,7 +65,7 @@ Key gameplay challenge: Can players collect and craft tokens from nearby locatio
 ### D3.d
 
 - [x] Make the character player token follow the players real world location (I accidentally did this already in D3.a)
-- [ ] make the game rememebr your state even after closing
+- [x] make the game rememebr your state even after closing (local storage)
 - [ ] impliment reset button at the bottom
 - [ ] add a button that hides or shows the movement keys
 - [ ] do a facade system design

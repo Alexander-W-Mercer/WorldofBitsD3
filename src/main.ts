@@ -238,6 +238,19 @@ class TileCaretaker {
   hasState(key: string): boolean {
     return this.savedStates.has(key);
   }
+
+  // Get all saved states for serialization
+  getAllStates(): [string, TileMemento][] {
+    return Array.from(this.savedStates.entries());
+  }
+
+  // Restore all states from serialized data
+  restoreAllStates(states: [string, TileMemento][]): void {
+    this.savedStates.clear();
+    for (const [key, memento] of states) {
+      this.savedStates.set(key, memento);
+    }
+  }
 }
 
 //////////////////////////////////////////////////////////////////
@@ -425,6 +438,7 @@ document.getElementById("north")!.addEventListener("click", () => {
   playerCircle.setLatLng(PLAYER_LATLNG);
   clearTiles();
   spawnTiles();
+  saveGameState();
 });
 
 document.getElementById("south")!.addEventListener("click", () => {
@@ -435,6 +449,7 @@ document.getElementById("south")!.addEventListener("click", () => {
   playerCircle.setLatLng(PLAYER_LATLNG);
   clearTiles();
   spawnTiles();
+  saveGameState();
 });
 
 document.getElementById("west")!.addEventListener("click", () => {
@@ -445,6 +460,7 @@ document.getElementById("west")!.addEventListener("click", () => {
   playerCircle.setLatLng(PLAYER_LATLNG);
   clearTiles();
   spawnTiles();
+  saveGameState();
 });
 
 document.getElementById("east")!.addEventListener("click", () => {
@@ -455,11 +471,63 @@ document.getElementById("east")!.addEventListener("click", () => {
   playerCircle.setLatLng(PLAYER_LATLNG);
   clearTiles();
   spawnTiles();
+  saveGameState();
 });
 
 // Display the player's points
 let playerPoints = 0;
 statusPanelDiv.innerHTML = "No points yet...";
+
+//////////////////////////////////////////////////////////////////
+// SAVE/LOAD GAME STATE
+//////////////////////////////////////////////////////////////////
+
+// Save game state to localStorage
+function saveGameState() {
+  const gameState = {
+    playerPoints: playerPoints,
+    playerOffset: playerOffset,
+    tileStates: tileCaretaker.getAllStates(),
+  };
+  localStorage.setItem("gameState", JSON.stringify(gameState));
+}
+
+// Load game state from localStorage
+function loadGameState() {
+  const savedData = localStorage.getItem("gameState");
+  if (savedData) {
+    try {
+      const gameState = JSON.parse(savedData);
+
+      // Restore player points
+      if (gameState.playerPoints !== undefined) {
+        playerPoints = gameState.playerPoints;
+        if (playerPoints > 0) {
+          statusPanelDiv.innerHTML = `${playerPoints} points accumulated`;
+        }
+      }
+
+      // Restore player offset
+      if (gameState.playerOffset) {
+        playerOffset.lat = gameState.playerOffset.lat;
+        playerOffset.lng = gameState.playerOffset.lng;
+        PLAYER_LATLNG = getPlayerLatLng();
+      }
+
+      // Restore tile states
+      if (gameState.tileStates) {
+        tileCaretaker.restoreAllStates(gameState.tileStates);
+      }
+
+      console.log("Game state loaded successfully");
+    } catch (e) {
+      console.error("Failed to load game state:", e);
+    }
+  }
+}
+
+// Load saved state when game starts
+loadGameState();
 
 // Add caches to the map by cell numbers
 function spawnCache(i: number, j: number) {
@@ -574,6 +642,9 @@ function spawnCache(i: number, j: number) {
             const memento = tile.save();
             tileCaretaker.saveState(`${i},${j}`, memento);
 
+            // Save to localStorage
+            saveGameState();
+
             if (playerPoints >= 64) {
               showVictory();
             }
@@ -605,6 +676,9 @@ function spawnCache(i: number, j: number) {
             const memento = tile.save();
             tileCaretaker.saveState(`${i},${j}`, memento);
 
+            // Save to localStorage
+            saveGameState();
+
             if (pointValue >= 64) {
               showVictory();
             }
@@ -632,6 +706,9 @@ function spawnCache(i: number, j: number) {
           // Save the tile's state to the caretaker
           const memento = tile.save();
           tileCaretaker.saveState(`${i},${j}`, memento);
+
+          // Save to localStorage
+          saveGameState();
         } else {
           alert("This cache is already empty!");
         }
