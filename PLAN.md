@@ -61,3 +61,11 @@ Key gameplay challenge: Can players collect and craft tokens from nearby locatio
 - [x] refactor the spawncache so that it actually uses the new flyweight stuff
 - [x] make it so that the tile / momento is only saved to the caretaker array after one of the three buttons on it has been clicked (destroy, take, place)
 - [x] Use the caretakers saved states to rebuild the tiles when moving back over an area
+
+### D3.d
+
+- [x] Make the character player token follow the players real world location (I accidentally did this already in D3.a)
+- [ ] make the game rememebr your state even after closing
+- [ ] impliment reset button at the bottom
+- [ ] add a button that hides or shows the movement keys
+- [ ] do a facade system design
